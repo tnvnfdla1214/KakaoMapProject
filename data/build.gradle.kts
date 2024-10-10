@@ -44,6 +44,15 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    // 코루틴 추가
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+
+    // Retrofit 및 코루틴 어댑터 추가
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation("com.squareup.retrofit2:adapter-coroutines:0.9.2")
 }
 
 kapt {
