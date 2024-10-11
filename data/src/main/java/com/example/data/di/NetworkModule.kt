@@ -27,9 +27,16 @@ class NetworkModule {
     fun providesOkHttpClient(
         @ApplicationContext context: Context,
     ): OkHttpClient {
+        // HttpLoggingInterceptor 추가 및 로그 레벨 설정
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            // 로그 레벨을 BODY로 설정하면 요청과 응답의 모든 세부사항이 출력됩니다.
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+
         return OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(context))
-            .addInterceptor(HttpLoggingInterceptor())
+            .addInterceptor(loggingInterceptor)
             .followRedirects(true)
             .followSslRedirects(true)
             .connectTimeout(30, TimeUnit.SECONDS)
@@ -43,7 +50,7 @@ class NetworkModule {
     fun providesRetrofit(
         converterFactory: GsonConverterFactory,
         client: OkHttpClient,
-    ): Retrofit = getRetrofit("https://api.readingn.com/api/", converterFactory, client)
+    ): Retrofit = getRetrofit("https://taxi-openapi.sandbox.onkakao.net/api/v1/coding-assignment/", converterFactory, client)
 
     private fun getRetrofit(
         url: String,

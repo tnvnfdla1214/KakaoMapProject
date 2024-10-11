@@ -60,6 +60,8 @@ dependencies {
 
     // 카카오 지도 SDK 추가
     implementation("com.kakao.maps.open:android:2.12.7")  // 카카오 맵 SDK 추가
+
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
 }
 
 kapt {

@@ -1,11 +1,11 @@
 package com.example.data
 
 import com.example.data.service.response.DistanceTime
-import com.example.data.service.response.OriginDestination
+import com.example.data.service.response.LocationsResponse
 import com.example.data.service.response.Route
 
 interface RouteRepository {
-    suspend fun getLocations(): List<OriginDestination>
-    suspend fun getRoute(origin: String, destination: String): Route
-    suspend fun getDistanceTime(origin: String, destination: String): DistanceTime
+    suspend fun getLocations(): Result<LocationsResponse>
+    suspend fun getRoute(origin: String, destination: String): Result<Route>
+    suspend fun getDistanceTime(origin: String, destination: String): Result<DistanceTime>
 }

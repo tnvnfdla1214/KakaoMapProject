@@ -1,5 +1,6 @@
 package com.example.kakaomapproject
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.RouteRepository
@@ -12,21 +13,40 @@ class MainViewModel @Inject constructor(
     private val routeRepository: RouteRepository
 ) : ViewModel() {
 
-    fun getLocations() {
+    // Locations 데이터 요청
+    fun fetchLocations() {
+        Log.d("qweqwe","fetchLocations")
         viewModelScope.launch {
-            val locations = routeRepository.getLocations()
+            val result = routeRepository.getLocations()
+            result.onSuccess { locations ->
+                Log.d("qweqwe", "locations : " + locations)
+            }.onFailure { throwable ->
+                Log.d("qweqwe", "throwable : " + throwable)
+            }
         }
     }
 
-    fun getRoute(origin: String, destination: String) {
+    // Route 데이터 요청
+    fun fetchRoute(origin: String, destination: String) {
         viewModelScope.launch {
-            val route = routeRepository.getRoute(origin, destination)
+            val result = routeRepository.getRoute(origin, destination)
+            result.onSuccess { route ->
+                Log.d("qweqwe", "route : " + route)
+            }.onFailure { throwable ->
+                Log.d("qweqwe", "throwable : " + throwable)
+            }
         }
     }
 
-    fun getDistanceTime(origin: String, destination: String) {
+    // DistanceTime 데이터 요청
+    fun fetchDistanceTime(origin: String, destination: String) {
         viewModelScope.launch {
-            val distanceTime = routeRepository.getDistanceTime(origin, destination)
+            val result = routeRepository.getDistanceTime(origin, destination)
+            result.onSuccess { distanceTime ->
+                Log.d("qweqwe", "distanceTime : " + distanceTime)
+            }.onFailure { throwable ->
+                Log.d("qweqwe", "throwable : " + throwable)
+            }
         }
     }
 
