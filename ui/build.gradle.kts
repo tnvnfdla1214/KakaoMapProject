@@ -53,6 +53,7 @@ dependencies {
 
     // 코루틴 추가
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
 
     // 카카오 지도 SDK 추가
     implementation("com.kakao.maps.open:android:2.12.7")  // 카카오 맵 SDK 추가
