@@ -36,7 +36,9 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.fetchLocations()
+        //viewModel.fetchLocations()
+        viewModel.fetchRoute("서울역", "판교역")
+        //viewModel.fetchDistanceTime("서울역", "판교역")
     }
 
     public override fun onResume() {

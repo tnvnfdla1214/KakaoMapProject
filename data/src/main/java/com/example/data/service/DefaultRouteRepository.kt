@@ -24,7 +24,7 @@ class DefaultRouteRepository @Inject constructor(
         }
     }
 
-    override suspend fun getRoute(origin: String, destination: String): Result<Route> {
+    override suspend fun getRoute(origin: String, destination: String): Result<List<Route>> {
         return try {
             val response = routeService.getRoute(origin, destination)
             if (response.isSuccessful) {

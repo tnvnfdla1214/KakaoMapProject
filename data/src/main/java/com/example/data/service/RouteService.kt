@@ -14,7 +14,7 @@ interface RouteService {
 
     @Headers("Content-Type: application/json")
     @GET("routes")
-    suspend fun getRoute(@Query("origin") origin: String,@Query("destination")  destination: String): Response<Route>
+    suspend fun getRoute(@Query("origin") origin: String,@Query("destination")  destination: String): Response<List<Route>>
 
     @Headers("Content-Type: application/json")
     @GET("distance-time")

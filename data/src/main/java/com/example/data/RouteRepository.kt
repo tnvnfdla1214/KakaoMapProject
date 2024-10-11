@@ -6,6 +6,6 @@ import com.example.data.service.response.Route
 
 interface RouteRepository {
     suspend fun getLocations(): Result<LocationsResponse>
-    suspend fun getRoute(origin: String, destination: String): Result<Route>
+    suspend fun getRoute(origin: String, destination: String): Result<List<Route>>
     suspend fun getDistanceTime(origin: String, destination: String): Result<DistanceTime>
 }
