@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import com.example.kakaomapproject.databinding.ActivityMainBinding
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.KakaoMapSdk
@@ -13,16 +15,14 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    lateinit var mapView: MapView
     private val viewModel: MainViewModel by viewModels()
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        KakaoMapSdk.INSTANCE.toString()
-        setContentView(R.layout.activity_main)
-        mapView = findViewById(R.id.map_view)
-        mapView.start(object : MapLifeCycleCallback() {
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.mapView.start(object : MapLifeCycleCallback() {
             override fun onMapDestroy() {
                 // 지도 API 가 정상적으로 종료될 때 호출됨
             }
@@ -43,12 +43,12 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onResume() {
         super.onResume()
-        mapView.resume() // MapView 의 resume 호출
+        binding.mapView.resume() // MapView 의 resume 호출
     }
 
     public override fun onPause() {
         super.onPause()
-        mapView.pause() // MapView 의 pause 호출
+        binding.mapView.pause() // MapView 의 pause 호출
     }
 
 
