@@ -13,5 +13,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/location_list_view"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_location" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
