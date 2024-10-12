@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.RouteRepository
+import com.example.data.response.OriginDestination
+import com.example.data.response.ResponseError
+import com.example.data.response.Route
 import com.example.kakaomapproject.model.RouteError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,36 +25,38 @@ class MainViewModel @Inject constructor(
     private val _errorViewState = MutableStateFlow<RouteError?>(null)
     val errorViewState: StateFlow<RouteError?> = _errorViewState
 
-    // Locations 데이터 요청
     fun fetchLocations() {
-        Log.d("qweqwe","fetchLocations")
         viewModelScope.launch {
             routeRepository.getLocations().onSuccess { response ->
                 _mainViewState.value = MainViewState.ListView(response.locations)
-                Log.d("qweqwe", "locations : " + response.locations.size)
             }.onFailure { throwable ->
                 Log.d("qweqwe", "throwable : " + throwable)
             }
         }
     }
 
-    // Route 데이터 요청
-    fun fetchRoute(origin: String, destination: String) {
+    fun fetchRoute(location: OriginDestination) {
         viewModelScope.launch {
-            routeRepository.getRoute(origin, destination).onSuccess { route ->
-                Log.d("qweqwe", "route : " + route)
+            routeRepository.getRoute(location.origin, location.destination).onSuccess { response ->
+                fetchDistanceTime(location, response)
             }.onFailure { throwable ->
-                Log.d("qweqwe", "throwable : " + throwable)
+                if (throwable is ResponseError) {
+                    _errorViewState.value = RouteError(
+                        RouteError.getRouteErrorPath(location),
+                        throwable.code,
+                        throwable.errorMessage
+                    )
+                }
             }
         }
     }
 
-    // DistanceTime 데이터 요청
-    fun fetchDistanceTime(origin: String, destination: String) {
+    private fun fetchDistanceTime(location: OriginDestination, routes: List<Route>) {
         viewModelScope.launch {
-            routeRepository.getDistanceTime(origin, destination).onSuccess { distanceTime ->
-                Log.d("qweqwe", "distanceTime : " + distanceTime)
-            }.onFailure { throwable ->
+            routeRepository.getDistanceTime(location.origin, location.destination)
+                .onSuccess { distanceTime ->
+                    _mainViewState.value = MainViewState.MapView(routes, distanceTime)
+                }.onFailure { throwable ->
                 Log.d("qweqwe", "throwable : " + throwable)
             }
         }

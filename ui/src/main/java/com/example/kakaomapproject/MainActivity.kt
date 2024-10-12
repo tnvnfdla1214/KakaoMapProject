@@ -1,6 +1,7 @@
 package com.example.kakaomapproject
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -35,12 +36,21 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.mainViewState.collect {
                 when (it) {
-                    is MainViewState.MapView -> {}
+                    is MainViewState.MapView -> {
+                        Log.d("qweqwe",it.routes.toString())
+                        Log.d("qweqwe", it.distanceTime.toString())
+                    }
                     is MainViewState.ListView -> {
                         setLocationListView(it.locations)
                     }
                     else -> {}
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.errorViewState.collect {
+                Log.d("qweqwe", "errorViewState : " + it.toString())
             }
         }
     }
@@ -62,7 +72,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setLocationListView(locations: List<OriginDestination>) {
-        val locationListAdapter = LocationListAdapter(locations)
+        val locationListAdapter = LocationListAdapter(locations) { location ->
+            viewModel.fetchRoute(location)
+        }
         binding.locationListView.layoutManager = LinearLayoutManager(this)
         binding.locationListView.adapter = locationListAdapter
 

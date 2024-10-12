@@ -3,6 +3,7 @@ package com.example.data.service
 import com.example.data.RouteRepository
 import com.example.data.response.DistanceTime
 import com.example.data.response.LocationsResponse
+import com.example.data.response.ResponseError
 import com.example.data.response.Route
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -29,10 +30,12 @@ class DefaultRouteRepository @Inject constructor(
             if (response.isSuccessful) {
                 Result.success(response.body()!!)
             } else {
-                Result.failure(HttpException(response))
+                val errorCode = response.code()
+                val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+                Result.failure(ResponseError(errorCode, errorMessage))
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(ResponseError(-1, e.message ?: "Unknown exception"))
         }
     }
 
