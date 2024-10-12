@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.RouteRepository
 import com.example.data.response.OriginDestination
-import com.example.data.response.ResponseError
+import com.example.data.response.ApiException
 import com.example.data.response.Route
 import com.example.kakaomapproject.model.RouteError
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,7 +40,7 @@ class MainViewModel @Inject constructor(
             routeRepository.getRoute(location.origin, location.destination).onSuccess { response ->
                 fetchDistanceTime(location, response)
             }.onFailure { throwable ->
-                if (throwable is ResponseError) {
+                if (throwable is ApiException) {
                     _errorViewState.value = RouteError(
                         RouteError.getRouteErrorPath(location),
                         throwable.code,

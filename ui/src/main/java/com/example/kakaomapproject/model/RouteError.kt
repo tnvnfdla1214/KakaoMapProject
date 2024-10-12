@@ -9,7 +9,7 @@ data class RouteError(
 ) {
     companion object {
         fun getRouteErrorPath(location: OriginDestination): String {
-            return "${location.origin}-${location.destination}"
+            return "${location.origin}~${location.destination}"
         }
     }
 }

@@ -37,12 +37,14 @@ class MainActivity : AppCompatActivity() {
             viewModel.mainViewState.collect {
                 when (it) {
                     is MainViewState.MapView -> {
-                        Log.d("qweqwe",it.routes.toString())
+                        Log.d("qweqwe", it.routes.toString())
                         Log.d("qweqwe", it.distanceTime.toString())
                     }
+
                     is MainViewState.ListView -> {
                         setLocationListView(it.locations)
                     }
+
                     else -> {}
                 }
             }
@@ -50,7 +52,11 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.errorViewState.collect {
-                Log.d("qweqwe", "errorViewState : " + it.toString())
+                it?.let {
+                    val bottomSheet =
+                        ErrorBottomSheetFragment.newInstance(it.code, it.message, it.path)
+                    bottomSheet.show(supportFragmentManager, "ErrorBottomSheet")
+                }
             }
         }
     }

@@ -1,9 +1,10 @@
 package com.example.data.service
 
+import android.util.Log
 import com.example.data.RouteRepository
 import com.example.data.response.DistanceTime
 import com.example.data.response.LocationsResponse
-import com.example.data.response.ResponseError
+import com.example.data.response.ApiException
 import com.example.data.response.Route
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -32,10 +33,14 @@ class DefaultRouteRepository @Inject constructor(
             } else {
                 val errorCode = response.code()
                 val errorMessage = response.errorBody()?.string() ?: "Unknown error"
-                Result.failure(ResponseError(errorCode, errorMessage))
+
+                // fromJson 함수를 사용해 JSON 파싱 및 ApiException 생성
+                val apiException = ApiException.fromJson(errorMessage, errorCode)
+
+                Result.failure(apiException)
             }
         } catch (e: Exception) {
-            Result.failure(ResponseError(-1, e.message ?: "Unknown exception"))
+            Result.failure(ApiException(-1, e.message ?: "Unknown exception"))
         }
     }
 
