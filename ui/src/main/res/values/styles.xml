@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppBottomSheetDialogBorder24WhiteTheme"
-        parent="Theme.Design.Light.BottomSheetDialog">
+
+    <style name="AppBottomSheetDialogBorder24WhiteTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalBorder24WhiteStyle</item>
         <item name="android:windowIsFloating">false</item>
     </style>
 
-    <style name="AppModalBorder24WhiteStyle"
-        parent="Widget.Design.BottomSheet.Modal">
+    <style name="AppModalBorder24WhiteStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bottom_sheet_white_24</item>
     </style>
 
@@ -37,5 +36,19 @@
         <item name="mapLineColor">#0597F2</item>
         <item name="mapStrokeWidth">3</item>
         <item name="mapStrokeColor">#ffffff</item>
+    </style>
+
+    <style name="labelTextStyle_1" parent="LabelTextStyle">
+        <item name="mapTextSize">32</item>
+        <item name="mapTextColor">#DB5461</item>
+        <item name="mapTextStrokeWidth">1</item>
+        <item name="mapTextStrokeColor">#DB5461</item>
+    </style>
+
+    <style name="labelTextStyle_2" parent="LabelTextStyle">
+        <item name="mapTextSize">30</item>
+        <item name="mapTextColor">#624CAB</item>
+        <item name="mapTextStrokeWidth">1</item>
+        <item name="mapTextStrokeColor">@android:color/darker_gray</item>
     </style>
 </resources>

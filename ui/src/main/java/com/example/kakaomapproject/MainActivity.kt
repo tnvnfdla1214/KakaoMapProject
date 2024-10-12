@@ -22,6 +22,13 @@ import com.kakao.vectormap.LatLngBounds
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.camera.CameraAnimation
 import com.kakao.vectormap.camera.CameraUpdateFactory
+import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelStyles
+import com.kakao.vectormap.label.LabelTextBuilder
+import com.kakao.vectormap.label.LabelTextStyle
+import com.kakao.vectormap.label.LabelTransition
+import com.kakao.vectormap.label.Transition
 import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
@@ -168,6 +175,15 @@ class MainActivity : AppCompatActivity() {
                 latLngPoint
             }
             segments.add(RouteLineSegment.from(points, style))
+
+            if (index == 0) {
+                addIconTextLabel("startLabel_$index", points.first(), "Start")
+            }
+
+            // Add a marker at the end position only for the last route
+            if (index == routes.lastIndex) {
+                addIconTextLabel("endLabel_$index", points.last(), "End")
+            }
         }
 
         // Create RouteLineOptions with segments
@@ -179,8 +195,31 @@ class MainActivity : AppCompatActivity() {
         // Move the camera to fit the route bounds
         val bounds = boundsBuilder.build() // Build the bounds from all the route points
         kakaoMap.moveCamera(
-            CameraUpdateFactory.fitMapPoints(bounds, 100), // Adjust the camera to fit the bounds with padding
+            CameraUpdateFactory.fitMapPoints(
+                bounds,
+                100
+            ), // Adjust the camera to fit the bounds with padding
             CameraAnimation.from(500) // Optional smooth animation
+        )
+    }
+
+    private fun addIconTextLabel(labelId: String, position: LatLng, text: String) {
+        val labelLayer = kakaoMap.labelManager?.layer
+
+        // Define the styles for the marker with text
+        val styles = kakaoMap.labelManager?.addLabelStyles(
+            LabelStyles.from(
+                LabelStyle.from(R.drawable.ic_launcher_foreground).setTextStyles(
+                    LabelTextStyle.from(this, R.style.labelTextStyle_1),
+                    LabelTextStyle.from(this, R.style.labelTextStyle_2)
+                ).setIconTransition(LabelTransition.from(Transition.None, Transition.None))
+            )
+        )
+
+        // Create and add the label to the map
+        labelLayer?.addLabel(
+            LabelOptions.from(labelId, position).setStyles(styles)
+                .setTexts(LabelTextBuilder().setTexts(text))
         )
     }
 }
