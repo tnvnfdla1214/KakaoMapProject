@@ -12,6 +12,7 @@ import androidx.core.animation.doOnEnd
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.data.response.DistanceTime
 import com.example.data.response.OriginDestination
 import com.example.data.response.Route
 import com.example.kakaomapproject.databinding.ActivityMainBinding
@@ -34,15 +35,8 @@ import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
 import com.kakao.vectormap.route.RouteLineSegment
 import com.kakao.vectormap.route.RouteLineStyle
-import com.kakao.vectormap.shape.MapPoints
-import com.kakao.vectormap.shape.Polyline
-import com.kakao.vectormap.shape.PolylineCap
-import com.kakao.vectormap.shape.PolylineOptions
-import com.kakao.vectormap.shape.PolylineStyles
-import com.kakao.vectormap.shape.PolylineStylesSet
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import java.util.Collections.addAll
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -69,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                             routeLineLayer.remove(multiStyleLine)
                         }
                         createMultiStyleRoute(viewState.routes)
+                        setTimeDistanceView(viewState.distanceTime)
                         hideLocationListWithAnimation()
                     }
 
@@ -108,6 +103,12 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun setTimeDistanceView(distanceTime: DistanceTime) {
+        binding.time.text = distanceTime.time.toString()
+        binding.distance.text = distanceTime.distance.toString()
+        binding.timeDistanceBox.visibility = View.VISIBLE
+    }
+
     private fun setLocationListView(locations: List<OriginDestination>) {
         val locationListAdapter = LocationListAdapter(locations) { location ->
             viewModel.fetchRoute(location)
@@ -128,7 +129,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun hideLocationListWithAnimation() {
-        // Y축 이동 애니메이션 (아래로 이동)
         val translationY = ObjectAnimator.ofFloat(
             binding.locationListView,
             "translationY",
@@ -136,17 +136,14 @@ class MainActivity : AppCompatActivity() {
             binding.locationListView.height.toFloat()
         )
 
-        // 알파값을 1에서 0으로 (투명해지기)
         val fadeOut = ObjectAnimator.ofFloat(binding.locationListView, "alpha", 1f, 0f)
 
-        // 애니메이션 세트를 통해 동시에 실행
         val animatorSet = AnimatorSet().apply {
             playTogether(translationY, fadeOut)
-            duration = 300 // 애니메이션 시간 설정 (300ms)
+            duration = 300
         }
 
         animatorSet.start()
-        // 애니메이션 끝난 후 View.GONE 처리
         animatorSet.doOnEnd {
             binding.locationListView.visibility = View.GONE
             binding.locationListView.translationY = 0f // 위치 원복
@@ -158,7 +155,6 @@ class MainActivity : AppCompatActivity() {
         val segments = mutableListOf<RouteLineSegment>()
         val boundsBuilder = LatLngBounds.Builder()
 
-        // Loop through each route and create segments with different styles
         routes.forEachIndexed { index, route ->
             val style = when (index % 3) {
                 0 -> RouteLineStyle.from(this, R.style.RedRouteLineStyle)
@@ -179,17 +175,13 @@ class MainActivity : AppCompatActivity() {
             if (index == 0) {
                 addIconTextLabel("startLabel_$index", points.first(), "Start")
             }
-
-            // Add a marker at the end position only for the last route
             if (index == routes.lastIndex) {
                 addIconTextLabel("endLabel_$index", points.last(), "End")
             }
         }
 
-        // Create RouteLineOptions with segments
         val options = RouteLineOptions.from(segments)
 
-        // Add route line to the map
         multiStyleLine = routeLineLayer.addRouteLine(options)
 
         // Move the camera to fit the route bounds
