@@ -149,6 +149,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun createMultiStyleRoute(routes: List<Route>) {
         val segments = mutableListOf<RouteLineSegment>()
+        val boundsBuilder = LatLngBounds.Builder()
 
         // Loop through each route and create segments with different styles
         routes.forEachIndexed { index, route ->
@@ -162,7 +163,9 @@ class MainActivity : AppCompatActivity() {
             // Convert route points to LatLng and create RouteLineSegment
             val points = route.points.split(" ").map {
                 val latLng = it.split(",")
-                LatLng.from(latLng[1].toDouble(), latLng[0].toDouble())
+                val latLngPoint = LatLng.from(latLng[1].toDouble(), latLng[0].toDouble())
+                boundsBuilder.include(latLngPoint) // Add each LatLng point to bounds builder
+                latLngPoint
             }
             segments.add(RouteLineSegment.from(points, style))
         }
@@ -173,12 +176,11 @@ class MainActivity : AppCompatActivity() {
         // Add route line to the map
         multiStyleLine = routeLineLayer.addRouteLine(options)
 
-        // Move camera to the route
-        if (routes.isNotEmpty()) {
-            kakaoMap.moveCamera(
-                CameraUpdateFactory.newCenterPosition(LatLng.from(37.394882, 127.110457), 15),
-                CameraAnimation.from(500)
-            )
-        }
+        // Move the camera to fit the route bounds
+        val bounds = boundsBuilder.build() // Build the bounds from all the route points
+        kakaoMap.moveCamera(
+            CameraUpdateFactory.fitMapPoints(bounds, 100), // Adjust the camera to fit the bounds with padding
+            CameraAnimation.from(500) // Optional smooth animation
+        )
     }
 }
