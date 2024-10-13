@@ -1,6 +1,6 @@
 package com.example.data.di
 
-import android.content.Context
+import com.example.data.BuildConfig
 import com.example.data.network.AuthInterceptor
 import dagger.Module
 import dagger.Provides
@@ -54,10 +54,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun providesAuthInterceptor(): AuthInterceptor {
-        val authToken = "5c3bda0d-001e-4db0-b1f0-01ceb2cce8f5"
-        return AuthInterceptor(authToken)
-    }
+    fun providesAuthInterceptor(): AuthInterceptor = AuthInterceptor(BuildConfig.AUTHORIZATION_KEY)
 
     @Provides
     @Singleton

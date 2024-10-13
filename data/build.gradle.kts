@@ -12,7 +12,8 @@ android {
 
     defaultConfig {
         minSdk = 24
-
+        val authKey = project.findProperty("AUTHORIZATION_KEY") ?: ""
+        buildConfigField("String", "AUTHORIZATION_KEY", "${authKey}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
@@ -32,6 +33,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 

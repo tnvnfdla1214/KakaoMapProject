@@ -17,6 +17,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val appKey = project.findProperty("KAKAO_APP_KEY") ?: ""
+        buildConfigField("String", "KAKAO_APP_KEY", "${appKey}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -39,6 +41,7 @@ android {
 
     buildFeatures {
         dataBinding = true
+        buildConfig = true
     }
 
 }
