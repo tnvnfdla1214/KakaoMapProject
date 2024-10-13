@@ -20,9 +20,9 @@ class ErrorBottomSheetFragment : BottomSheetDialogFragment() {
     ): View {
         binding = FragmentErrorBottomSheetBinding.inflate(inflater, container, false)
 
-        val errorCode = arguments?.getInt(ARG_ERROR_CODE) ?: 0
-        val errorMessage = arguments?.getString(ARG_ERROR_MESSAGE) ?: "Unknown Error"
-        val errorPath = arguments?.getString(ARG_ERROR_PATH) ?: "No path info available"
+        val errorCode = arguments?.getInt(ARG_ERROR_CODE) ?: UNKNOWN_ERROR_CODE
+        val errorMessage = arguments?.getString(ARG_ERROR_MESSAGE) ?: UNKNOWN_ERROR
+        val errorPath = arguments?.getString(ARG_ERROR_PATH) ?: NO_PATH_INFO
 
         binding.path.text = errorPath
         binding.code.text = errorCode.toString()
@@ -46,6 +46,9 @@ class ErrorBottomSheetFragment : BottomSheetDialogFragment() {
         private const val ARG_ERROR_MESSAGE = "error_message"
         private const val ARG_ERROR_PATH = "error_path"
         const val TAG = "ErrorBottomSheet"
+        const val UNKNOWN_ERROR = "Unknown Error"
+        const val NO_PATH_INFO = "No path info"
+        const val UNKNOWN_ERROR_CODE = -1
 
         fun newInstance(
             errorCode: Int,

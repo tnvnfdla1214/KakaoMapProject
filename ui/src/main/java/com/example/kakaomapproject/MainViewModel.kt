@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.RouteRepository
 import com.example.data.response.OriginDestination
 import com.example.data.response.ApiException
+import com.example.data.response.DistanceTime
 import com.example.kakaomapproject.model.Route
 import com.example.kakaomapproject.model.RouteError
 import com.kakao.vectormap.LatLng
@@ -81,6 +82,21 @@ class MainViewModel @Inject constructor(
                 boundsBuilder.include(this)
             }
         }
+    }
+
+    fun getFormattedTime(distanceTime: DistanceTime): String {
+        val minutes = distanceTime.time / 60
+        val seconds = distanceTime.time % 60
+        return FORMAT_TIME.format(minutes, seconds)
+    }
+
+    fun getFormattedDistance(distanceTime: DistanceTime): String {
+        return FORMAT_DISTANCE.format(distanceTime.distance)
+    }
+
+    companion object {
+        const val FORMAT_TIME = "%d분 %d초"
+        const val FORMAT_DISTANCE = "%,dm"
     }
 
 }

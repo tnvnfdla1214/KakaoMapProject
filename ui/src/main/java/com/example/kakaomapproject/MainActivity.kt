@@ -103,8 +103,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setTimeDistanceView(distanceTime: DistanceTime) {
-        binding.time.text = distanceTime.getFormattedTime()
-        binding.distance.text = distanceTime.getFormattedDistance()
+        binding.time.text = viewModel.getFormattedTime(distanceTime)
+        binding.distance.text = viewModel.getFormattedDistance(distanceTime)
         binding.timeDistanceBox.visibility = View.VISIBLE
     }
 
