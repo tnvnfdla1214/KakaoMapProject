@@ -17,23 +17,7 @@ import com.example.kakaomapproject.model.Route
 import com.example.kakaomapproject.model.RouteError
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
-import com.kakao.vectormap.LatLng
-import com.kakao.vectormap.LatLngBounds
 import com.kakao.vectormap.MapLifeCycleCallback
-import com.kakao.vectormap.camera.CameraAnimation
-import com.kakao.vectormap.camera.CameraUpdateFactory
-import com.kakao.vectormap.label.LabelOptions
-import com.kakao.vectormap.label.LabelStyle
-import com.kakao.vectormap.label.LabelStyles
-import com.kakao.vectormap.label.LabelTextBuilder
-import com.kakao.vectormap.label.LabelTextStyle
-import com.kakao.vectormap.label.LabelTransition
-import com.kakao.vectormap.label.Transition
-import com.kakao.vectormap.route.RouteLine
-import com.kakao.vectormap.route.RouteLineLayer
-import com.kakao.vectormap.route.RouteLineOptions
-import com.kakao.vectormap.route.RouteLineSegment
-import com.kakao.vectormap.route.RouteLineStyle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -42,8 +26,6 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private lateinit var binding: ActivityMainBinding
     private lateinit var kakaoMap: KakaoMap
-    private lateinit var routeLineLayer: RouteLineLayer
-    private var multiStyleLine: RouteLine? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,17 +54,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleMapViewState(viewState: MainViewState.MapView) {
-        removeExistingRoute()
-        createMultiStyleRoute(viewState.routes)
+        viewModel.removeExistingRoute()
+        viewModel.createMultiStyleRoute(viewState.routes, kakaoMap)
         setTimeDistanceView(viewState.distanceTime)
         hideLocationListWithAnimation()
-    }
-
-    private fun removeExistingRoute() {
-        multiStyleLine?.let {
-            routeLineLayer.remove(it)
-            multiStyleLine = null
-        }
     }
 
     private fun showErrorBottomSheet(routeError: RouteError) {
@@ -102,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         }, object : KakaoMapReadyCallback() {
             override fun onMapReady(map: KakaoMap) {
                 kakaoMap = map
-                routeLineLayer = kakaoMap.routeLineManager?.layer ?: return
+                viewModel.initRouteLineLayer(kakaoMap)
             }
         })
     }
@@ -145,64 +120,6 @@ class MainActivity : AppCompatActivity() {
     private fun resetLocationListView() {
         binding.locationListView.translationY = 0f
         binding.locationListView.alpha = 1f
-    }
-
-    private fun createMultiStyleRoute(routes: List<Route>) {
-        val segments = mutableListOf<RouteLineSegment>()
-        val boundsBuilder = LatLngBounds.Builder()
-
-        routes.forEachIndexed { index, route ->
-            val points = parseRoutePoints(route, boundsBuilder)
-            val style = route.trafficState.getRouteLineStyle(this)
-            segments.add(RouteLineSegment.from(points, style))
-
-            if (index == 0) addIconTextLabel("startLabel_$index", points.first(), "Start")
-            if (index == routes.lastIndex) addIconTextLabel("endLabel_$index", points.last(), "End")
-        }
-        drawRouteLine(segments)
-        moveCameraToRouteBounds(boundsBuilder)
-    }
-
-    private fun addIconTextLabel(labelId: String, position: LatLng, text: String) {
-        val labelLayer = kakaoMap.labelManager?.layer
-
-        // Define the styles for the marker with text
-        val styles = kakaoMap.labelManager?.addLabelStyles(
-            LabelStyles.from(
-                LabelStyle.from(R.drawable.ic_launcher_foreground).setTextStyles(
-                    LabelTextStyle.from(this, R.style.labelTextStyle_1),
-                    LabelTextStyle.from(this, R.style.labelTextStyle_2)
-                ).setIconTransition(LabelTransition.from(Transition.None, Transition.None))
-            )
-        )
-
-        // Create and add the label to the map
-        labelLayer?.addLabel(
-            LabelOptions.from(labelId, position).setStyles(styles)
-                .setTexts(LabelTextBuilder().setTexts(text))
-        )
-    }
-
-    private fun parseRoutePoints(route: Route, boundsBuilder: LatLngBounds.Builder): List<LatLng> {
-        return route.points.split(" ").map {
-            val latLng = it.split(",")
-            LatLng.from(latLng[1].toDouble(), latLng[0].toDouble()).apply {
-                boundsBuilder.include(this)
-            }
-        }
-    }
-
-    private fun drawRouteLine(segments: List<RouteLineSegment>) {
-        val options = RouteLineOptions.from(segments)
-        multiStyleLine = routeLineLayer.addRouteLine(options)
-    }
-
-    private fun moveCameraToRouteBounds(boundsBuilder: LatLngBounds.Builder) {
-        val bounds = boundsBuilder.build()
-        kakaoMap.moveCamera(
-            CameraUpdateFactory.fitMapPoints(bounds, 100),
-            CameraAnimation.from(500)
-        )
     }
 
     override fun onResume() {
