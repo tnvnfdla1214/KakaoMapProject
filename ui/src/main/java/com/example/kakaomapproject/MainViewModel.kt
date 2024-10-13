@@ -144,7 +144,7 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun parseRoutePoints(route: Route, boundsBuilder: LatLngBounds.Builder): List<LatLng> {
+    private fun parseRoutePoints(route: Route, boundsBuilder: LatLngBounds.Builder): List<LatLng> {
         return route.points.split(" ").map {
             val latLng = it.split(",")
             LatLng.from(latLng[1].toDouble(), latLng[0].toDouble()).apply {
