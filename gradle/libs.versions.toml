@@ -37,6 +37,13 @@ workManager = "2.9.1"
 # kakako map SDK
 kakaoMap = "2.12.7"
 
+# Networking
+retrofit = "2.11.0"
+loggingInterceptor = "4.11.0"
+
+# Json converting
+gson = "2.9.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -59,6 +66,17 @@ viewModelScope = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", versio
 
 # kakako map SDK
 kakaoMap = { module = "com.kakao.maps.open:android", version.ref = "kakaoMap" }
+
+# Networking
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
+
+# Json converting
+gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "gson" }
+
+[bundles]
+networkLibraries = ["retrofit", "loggingInterceptor", "gson"]
+
 
 [plugins]
 # default
