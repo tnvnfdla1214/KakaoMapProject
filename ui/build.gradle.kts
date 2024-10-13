@@ -18,7 +18,7 @@ android {
         versionName = "1.0"
 
         val appKey = project.findProperty("KAKAO_APP_KEY") ?: ""
-        buildConfigField("String", "KAKAO_APP_KEY", "${appKey}")
+        buildConfigField("String", "KAKAO_APP_KEY", "$appKey")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
