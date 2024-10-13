@@ -1,7 +1,5 @@
 package com.example.data.network
 
-import android.content.Context
-import com.example.data.AUTHORIZATION
 import okhttp3.Interceptor
 import okhttp3.Response
 

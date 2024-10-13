@@ -41,7 +41,6 @@ class NetworkModule {
             .followSslRedirects(true)
             .connectTimeout(TIMEOUT_DURATION, TimeUnit.SECONDS)
             .readTimeout(TIMEOUT_DURATION, TimeUnit.SECONDS)
-            .writeTimeout(TIMEOUT_DURATION, TimeUnit.SECONDS)
             .build()
     }
 
@@ -56,8 +55,7 @@ class NetworkModule {
     @Provides
     @Singleton
     fun providesAuthInterceptor(): AuthInterceptor {
-        // 예시로 고정된 토큰을 사용하지만, 실제 앱에서는 이 부분을 동적으로 설정
-        val authToken = "5c3bda0d-001e-4db0-b1f0-01ceb2cce8f5"  // 이 부분을 동적으로 변경 가능
+        val authToken = "5c3bda0d-001e-4db0-b1f0-01ceb2cce8f5"
         return AuthInterceptor(authToken)
     }
 
