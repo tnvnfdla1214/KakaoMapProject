@@ -50,6 +50,10 @@ class MainViewModel @Inject constructor(
         fetchLocations()
     }
 
+    fun restErrorViewState() {
+        _errorViewState.value = null
+    }
+
     private fun fetchLocations() {
         viewModelScope.launch {
             routeRepository.getLocations().onSuccess { response ->

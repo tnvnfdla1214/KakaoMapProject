@@ -1,6 +1,7 @@
 package com.example.kakaomapproject
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ class ErrorBottomSheetFragment : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentErrorBottomSheetBinding
 
+    var onDismissCallback: (() -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +38,18 @@ class ErrorBottomSheetFragment : BottomSheetDialogFragment() {
         binding.code.text = errorCode.toString()
         binding.message.text = errorMessage
 
+        binding.closeButton.setOnClickListener {
+            onDismissCallback?.invoke()
+            dismiss()
+        }
         return binding.root
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        onDismissCallback?.invoke()
+    }
+
 
     companion object {
         private const val ARG_ERROR_CODE = "error_code"
@@ -47,9 +59,11 @@ class ErrorBottomSheetFragment : BottomSheetDialogFragment() {
         fun newInstance(
             errorCode: Int,
             errorMessage: String,
-            errorPath: String?
+            errorPath: String?,
+            onDismissCallback: (() -> Unit)? = null
         ): ErrorBottomSheetFragment {
             val fragment = ErrorBottomSheetFragment()
+            fragment.onDismissCallback = onDismissCallback
             val args = Bundle().apply {
                 putInt(ARG_ERROR_CODE, errorCode)
                 putString(ARG_ERROR_MESSAGE, errorMessage)

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.data.response.DistanceTime
 import com.example.data.response.OriginDestination
 import com.example.kakaomapproject.databinding.ActivityMainBinding
-import com.example.kakaomapproject.model.Route
 import com.example.kakaomapproject.model.RouteError
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
@@ -64,7 +63,8 @@ class MainActivity : AppCompatActivity() {
         val bottomSheet = ErrorBottomSheetFragment.newInstance(
             routeError.code,
             routeError.message,
-            routeError.path
+            routeError.path,
+            onDismissCallback = { viewModel.restErrorViewState() }
         )
         bottomSheet.show(supportFragmentManager, "ErrorBottomSheet")
     }
