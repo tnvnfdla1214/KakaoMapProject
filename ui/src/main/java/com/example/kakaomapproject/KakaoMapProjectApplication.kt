@@ -5,7 +5,7 @@ import com.kakao.vectormap.KakaoMapSdk
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class KakaoMapProject: Application() {
+class KakaoMapProjectApplication: Application() {
     override fun onCreate() {
         super.onCreate()
 
