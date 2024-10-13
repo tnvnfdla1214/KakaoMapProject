@@ -12,16 +12,11 @@ enum class TrafficState(@ColorRes val color: Int) {
     BLOCK(R.style.BlockRouteLineStyle);
 
     companion object {
+
+        private val trafficStateMap by lazy { entries.associateBy(TrafficState::name) }
+
         fun fromString(value: String): TrafficState {
-            return when (value) {
-                "UNKNOWN" -> UNKNOWN
-                "JAM" -> JAM
-                "DELAY" -> DELAY
-                "SLOW" -> SLOW
-                "NORMAL" -> NORMAL
-                "BLOCK" -> BLOCK
-                else -> UNKNOWN
-            }
+            return trafficStateMap[value] ?: UNKNOWN
         }
     }
 }
