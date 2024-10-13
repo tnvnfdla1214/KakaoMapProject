@@ -70,11 +70,10 @@ dependencies {
     // 카카오 지도 SDK
     implementation(libs.kakaoMap)
 
-    testImplementation("io.mockk:mockk:1.12.0")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("androidx.arch.core:core-testing:2.2.0")
-    testImplementation("app.cash.turbine:turbine:0.7.0")
+    // Test
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }
 
 kapt {
