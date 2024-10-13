@@ -25,6 +25,7 @@ import com.kakao.vectormap.route.RouteLine
 import com.kakao.vectormap.route.RouteLineLayer
 import com.kakao.vectormap.route.RouteLineOptions
 import com.kakao.vectormap.route.RouteLineSegment
+import com.kakao.vectormap.route.RouteLineStyle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -110,8 +111,12 @@ class MainViewModel @Inject constructor(
 
         routes.forEachIndexed { index, route ->
             val points = parseRoutePoints(route, boundsBuilder)
-            val style = route.trafficState.getRouteLineStyle(application.baseContext)
-            segments.add(RouteLineSegment.from(points, style))
+            segments.add(
+                RouteLineSegment.from(
+                    points,
+                    RouteLineStyle.from(application.baseContext, route.trafficState.color)
+                )
+            )
 
             if (index == 0) addIconTextLabel("startLabel_$index", points.first(), "Start", kakaoMap)
             if (index == routes.lastIndex) addIconTextLabel(
