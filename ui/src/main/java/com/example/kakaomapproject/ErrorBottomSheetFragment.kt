@@ -45,6 +45,7 @@ class ErrorBottomSheetFragment : BottomSheetDialogFragment() {
         private const val ARG_ERROR_CODE = "error_code"
         private const val ARG_ERROR_MESSAGE = "error_message"
         private const val ARG_ERROR_PATH = "error_path"
+        const val TAG = "ErrorBottomSheet"
 
         fun newInstance(
             errorCode: Int,

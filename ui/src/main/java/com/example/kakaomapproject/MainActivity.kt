@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             routeError.path,
             onDismissCallback = { viewModel.restErrorViewState() }
         )
-        bottomSheet.show(supportFragmentManager, "ErrorBottomSheet")
+        bottomSheet.show(supportFragmentManager, ErrorBottomSheetFragment.TAG)
     }
 
     private fun initMap() {
@@ -120,15 +120,15 @@ class MainActivity : AppCompatActivity() {
     private fun hideLocationListWithAnimation() {
         val translationY = ObjectAnimator.ofFloat(
             binding.locationListView,
-            "translationY",
+            TRANSLATION_Y,
             0f,
             binding.locationListView.height.toFloat()
         )
-        val fadeOut = ObjectAnimator.ofFloat(binding.locationListView, "alpha", 1f, 0f)
+        val fadeOut = ObjectAnimator.ofFloat(binding.locationListView, ALPHA, FULL_OPACITY, NO_OPACITY)
 
         AnimatorSet().apply {
             playTogether(translationY, fadeOut)
-            duration = 300
+            duration = ANIMATION_DURATION
             start()
             doOnEnd {
                 binding.locationListView.visibility = View.INVISIBLE
@@ -138,27 +138,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resetLocationListView() {
-        binding.locationListView.translationY = 0f
-        binding.locationListView.alpha = 1f
+        binding.locationListView.translationY = INITIAL_POSITION
+        binding.locationListView.alpha = FULL_OPACITY
     }
 
     fun initRouteLineLayer() {
         routeLineLayer = kakaoMap.routeLineManager?.layer ?: return
     }
 
-    fun removeExistingRoute() {
+    private fun removeExistingRoute() {
         multiStyleLine?.let { routeLine ->
             routeLineLayer.remove(routeLine)
             multiStyleLine = null
         }
     }
 
-    fun createMultiStyleRoute(routes: List<Route>) {
+    private fun createMultiStyleRoute(routes: List<Route>) {
         val segments = mutableListOf<RouteLineSegment>()
         val boundsBuilder = LatLngBounds.Builder()
 
         routes.forEachIndexed { index, route ->
-            val points = parseRoutePoints(route, boundsBuilder)
+            val points = viewModel.parseRoutePoints(route, boundsBuilder)
             segments.add(
                 RouteLineSegment.from(
                     points,
@@ -166,11 +166,10 @@ class MainActivity : AppCompatActivity() {
                 )
             )
 
-            if (index == 0) addIconTextLabel("startLabel_$index", points.first(), "Start")
+            if (index == 0) addIconTextLabel(points.first(), START_LABEL)
             if (index == routes.lastIndex) addIconTextLabel(
-                "endLabel_$index",
                 points.last(),
-                "End",
+                END_LABEL,
             )
         }
         drawRouteLine(segments)
@@ -178,7 +177,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addIconTextLabel(
-        labelId: String,
         position: LatLng,
         text: String,
     ) {
@@ -192,20 +190,10 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // Create and add the label to the map
         labelLayer?.addLabel(
-            LabelOptions.from(labelId, position).setStyles(styles)
+            LabelOptions.from(text, position).setStyles(styles)
                 .setTexts(LabelTextBuilder().setTexts(text))
         )
-    }
-
-    private fun parseRoutePoints(route: Route, boundsBuilder: LatLngBounds.Builder): List<LatLng> {
-        return route.points.split(" ").map {
-            val latLng = it.split(",")
-            LatLng.from(latLng[1].toDouble(), latLng[0].toDouble()).apply {
-                boundsBuilder.include(this)
-            }
-        }
     }
 
     private fun drawRouteLine(segments: List<RouteLineSegment>) {
@@ -216,8 +204,8 @@ class MainActivity : AppCompatActivity() {
     private fun moveCameraToRouteBounds(boundsBuilder: LatLngBounds.Builder, kakaoMap: KakaoMap) {
         val bounds = boundsBuilder.build()
         kakaoMap.moveCamera(
-            CameraUpdateFactory.fitMapPoints(bounds, 100),
-            CameraAnimation.from(500)
+            CameraUpdateFactory.fitMapPoints(bounds, CAMERA_PADDING),
+            CameraAnimation.from(CAMERA_ANIMATION_DURATION)
         )
     }
 
@@ -229,5 +217,18 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         binding.mapView.pause()
+    }
+
+    companion object {
+        private const val TRANSLATION_Y = "translationY"
+        private const val ALPHA = "alpha"
+        private const val INITIAL_POSITION = 0f
+        private const val NO_OPACITY = 0f
+        private const val FULL_OPACITY = 1f
+        private const val ANIMATION_DURATION = 300L
+        private const val CAMERA_ANIMATION_DURATION = 500
+        private const val START_LABEL = "Start"
+        private const val END_LABEL = "End"
+        private const val CAMERA_PADDING = 100
     }
 }
