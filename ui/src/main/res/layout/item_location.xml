@@ -16,10 +16,8 @@
 
             <TextView
                 android:id="@+id/text_origin_label"
-                android:textSize="16sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="출발지 : "
+                style="@style/location_item_text"
+                android:text="@string/origin_label_text"
                 android:textColor="#000000"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -27,9 +25,7 @@
 
             <TextView
                 android:id="@+id/text_origin"
-                android:textSize="16sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/location_item_text"
                 android:textColor="#1976D2"
                 app:layout_constraintStart_toEndOf="@id/text_origin_label"
                 app:layout_constraintTop_toTopOf="parent"
@@ -37,10 +33,8 @@
 
             <TextView
                 android:id="@+id/text_destination_label"
-                android:textSize="16sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="도착지 : "
+                style="@style/location_item_text"
+                android:text="@string/destination_label_text"
                 android:textColor="#000000"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -48,9 +42,7 @@
 
             <TextView
                 android:id="@+id/text_destination"
-                android:textSize="16sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/location_item_text"
                 android:textColor="#388E3C"
                 app:layout_constraintStart_toEndOf="@id/text_destination_label"
                 app:layout_constraintTop_toBottomOf="@id/text_origin"

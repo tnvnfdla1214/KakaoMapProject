@@ -2,4 +2,11 @@
     <string name="app_name">KakaoMapProject</string>
     <string name="time_label_text">시간 : </string>
     <string name="distance_label_text">거리 : </string>
+    <string name="path_error_title_text">경로조회 실패</string>
+    <string name="path_error_path_label_text">경로 : </string>
+    <string name="path_error_code_label_text">code : </string>
+    <string name="path_error_message_label_text">message : </string>
+    <string name="confine">확인</string>
+    <string name="origin_label_text">출발지 : </string>
+    <string name="destination_label_text">도착지 : </string>
 </resources>
