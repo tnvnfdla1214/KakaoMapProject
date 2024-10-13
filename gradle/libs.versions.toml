@@ -1,14 +1,41 @@
 [versions]
+# Versions
+compileSdk = "34"
+minSdk = "24"
+targetSdk = "34"
+appVersion = "1.0"
+versionCode = "1"
+
 agp = "8.6.0"
+
+# Kotlin
 kotlin = "1.9.0"
+
+# AndroidX Libraries
 coreKtx = "1.13.1"
+appcompat = "1.7.0"
+constraintlayout = "2.1.4"
+activity = "1.9.2"
+
+# Google Libraries
+material = "1.12.0"
+
+# Test Libraries
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-appcompat = "1.7.0"
-material = "1.12.0"
-activity = "1.9.2"
-constraintlayout = "2.1.4"
+
+# hilt
+hilt = "2.49"
+
+#ViewModel Scope
+viewModelScope = "2.8.6"
+
+# work_manager
+workManager = "2.9.1"
+
+# kakako map SDK
+kakaoMap = "2.12.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -20,8 +47,24 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
+# Work Manager
+androidx-workmanager = { module = "androidx.work:work-runtime-ktx", version.ref = "workManager" }
+
+# Hilt
+hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+hiltKapt = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
+
+#ViewModel Scope
+viewModelScope = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "viewModelScope" }
+
+# kakako map SDK
+kakaoMap = { module = "com.kakao.maps.open:android", version.ref = "kakaoMap" }
+
 [plugins]
+# default
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 
+# hilt
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }

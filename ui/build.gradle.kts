@@ -1,21 +1,21 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.hilt)
     kotlin("kapt")
-    id("com.google.dagger.hilt.android")
-    id("dagger.hilt.android.plugin")
 }
 
 android {
     namespace = "com.example.kakaomapproject"
-    compileSdk = 34
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.example.kakaomapproject"
-        minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.appVersion.get()
+
 
         val appKey = project.findProperty("KAKAO_APP_KEY") ?: ""
         buildConfigField("String", "KAKAO_APP_KEY", "$appKey")
@@ -38,16 +38,18 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
+    dataBinding {
+        enable = true
+    }
     buildFeatures {
-        dataBinding = true
         buildConfig = true
     }
-
 }
 
 dependencies {
+    // 내부 모듈 의존
     implementation(project(":data"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -56,20 +58,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.workmanager)
 
-    implementation("com.google.dagger:hilt-android:2.46.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.46.1")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
-    implementation("androidx.hilt:hilt-work:1.2.0")
+    // hilt
+    implementation(libs.hilt)
+    kapt(libs.hiltKapt)
 
-    // 코루틴 추가
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    // viewModel scope
+    implementation(libs.viewModelScope)
 
-    // 카카오 지도 SDK 추가
-    implementation("com.kakao.maps.open:android:2.12.7")  // 카카오 맵 SDK 추가
-
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    // 카카오 지도 SDK
+    implementation(libs.kakaoMap)
 }
 
 kapt {
