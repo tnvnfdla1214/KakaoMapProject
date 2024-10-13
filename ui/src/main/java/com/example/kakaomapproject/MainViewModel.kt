@@ -44,8 +44,8 @@ class MainViewModel @Inject constructor(
     private val _errorViewState = MutableStateFlow<RouteError?>(null)
     val errorViewState: StateFlow<RouteError?> = _errorViewState
 
-    private lateinit var routeLineLayer: RouteLineLayer
-    private var multiStyleLine: RouteLine? = null
+//    private lateinit var routeLineLayer: RouteLineLayer
+//    private var multiStyleLine: RouteLine? = null
 
     init {
         fetchLocations()
@@ -94,78 +94,78 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun initRouteLineLayer(kakaoMap: KakaoMap) {
-        routeLineLayer = kakaoMap.routeLineManager?.layer ?: return
-    }
+//    fun initRouteLineLayer(kakaoMap: KakaoMap) {
+//        routeLineLayer = kakaoMap.routeLineManager?.layer ?: return
+//    }
 
-    fun removeExistingRoute() {
-        multiStyleLine?.let { routeLine ->
-            routeLineLayer.remove(routeLine)
-            multiStyleLine = null
-        }
-    }
+//    fun removeExistingRoute() {
+//        multiStyleLine?.let { routeLine ->
+//            routeLineLayer.remove(routeLine)
+//            multiStyleLine = null
+//        }
+//    }
 
-    fun createMultiStyleRoute(routes: List<Route>, kakaoMap: KakaoMap) {
-        val segments = mutableListOf<RouteLineSegment>()
-        val boundsBuilder = LatLngBounds.Builder()
+//    fun createMultiStyleRoute(routes: List<Route>, kakaoMap: KakaoMap) {
+//        val segments = mutableListOf<RouteLineSegment>()
+//        val boundsBuilder = LatLngBounds.Builder()
+//
+//        routes.forEachIndexed { index, route ->
+//            val points = parseRoutePoints(route, boundsBuilder)
+//            segments.add(
+//                RouteLineSegment.from(
+//                    points,
+//                    RouteLineStyle.from(application.baseContext, route.trafficState.color)
+//                )
+//            )
+//
+//            if (index == 0) addIconTextLabel("startLabel_$index", points.first(), "Start", kakaoMap)
+//            if (index == routes.lastIndex) addIconTextLabel(
+//                "endLabel_$index",
+//                points.last(),
+//                "End",
+//                kakaoMap
+//            )
+//        }
+//        drawRouteLine(segments)
+//        moveCameraToRouteBounds(boundsBuilder, kakaoMap)
+//    }
 
-        routes.forEachIndexed { index, route ->
-            val points = parseRoutePoints(route, boundsBuilder)
-            segments.add(
-                RouteLineSegment.from(
-                    points,
-                    RouteLineStyle.from(application.baseContext, route.trafficState.color)
-                )
-            )
+//    private fun addIconTextLabel(
+//        labelId: String,
+//        position: LatLng,
+//        text: String,
+//        kakaoMap: KakaoMap
+//    ) {
+//        val labelLayer = kakaoMap.labelManager?.layer
+//        val styles = kakaoMap.labelManager?.addLabelStyles(
+//            LabelStyles.from(
+//                LabelStyle.from().setTextStyles(
+//                    LabelTextStyle.from(application.baseContext, R.style.labelTextStyle_1),
+//                    LabelTextStyle.from(application.baseContext, R.style.labelTextStyle_2)
+//                ).setIconTransition(LabelTransition.from(Transition.None, Transition.None))
+//            )
+//        )
+//
+//        // Create and add the label to the map
+//        labelLayer?.addLabel(
+//            LabelOptions.from(labelId, position).setStyles(styles)
+//                .setTexts(LabelTextBuilder().setTexts(text))
+//        )
+//    }
 
-            if (index == 0) addIconTextLabel("startLabel_$index", points.first(), "Start", kakaoMap)
-            if (index == routes.lastIndex) addIconTextLabel(
-                "endLabel_$index",
-                points.last(),
-                "End",
-                kakaoMap
-            )
-        }
-        drawRouteLine(segments)
-        moveCameraToRouteBounds(boundsBuilder, kakaoMap)
-    }
+//    private fun parseRoutePoints(route: Route, boundsBuilder: LatLngBounds.Builder): List<LatLng> {
+//        return route.points.split(" ").map {
+//            val latLng = it.split(",")
+//            LatLng.from(latLng[1].toDouble(), latLng[0].toDouble()).apply {
+//                boundsBuilder.include(this)
+//            }
+//        }
+//    }
 
-    private fun addIconTextLabel(
-        labelId: String,
-        position: LatLng,
-        text: String,
-        kakaoMap: KakaoMap
-    ) {
-        val labelLayer = kakaoMap.labelManager?.layer
-        val styles = kakaoMap.labelManager?.addLabelStyles(
-            LabelStyles.from(
-                LabelStyle.from().setTextStyles(
-                    LabelTextStyle.from(application.baseContext, R.style.labelTextStyle_1),
-                    LabelTextStyle.from(application.baseContext, R.style.labelTextStyle_2)
-                ).setIconTransition(LabelTransition.from(Transition.None, Transition.None))
-            )
-        )
-
-        // Create and add the label to the map
-        labelLayer?.addLabel(
-            LabelOptions.from(labelId, position).setStyles(styles)
-                .setTexts(LabelTextBuilder().setTexts(text))
-        )
-    }
-
-    private fun parseRoutePoints(route: Route, boundsBuilder: LatLngBounds.Builder): List<LatLng> {
-        return route.points.split(" ").map {
-            val latLng = it.split(",")
-            LatLng.from(latLng[1].toDouble(), latLng[0].toDouble()).apply {
-                boundsBuilder.include(this)
-            }
-        }
-    }
-
-    private fun drawRouteLine(segments: List<RouteLineSegment>) {
-        val options = RouteLineOptions.from(segments)
-        routeLineLayer.addRouteLine(options)
-    }
+//    private fun drawRouteLine(segments: List<RouteLineSegment>) {
+//        val options = RouteLineOptions.from(segments)
+//        routeLineLayer.addRouteLine(options)
+//    }
 
     private fun moveCameraToRouteBounds(boundsBuilder: LatLngBounds.Builder, kakaoMap: KakaoMap) {
         val bounds = boundsBuilder.build()
