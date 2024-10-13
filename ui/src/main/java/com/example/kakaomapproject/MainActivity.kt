@@ -2,9 +2,7 @@ package com.example.kakaomapproject
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +14,7 @@ import com.example.data.response.DistanceTime
 import com.example.data.response.OriginDestination
 import com.example.data.response.Route
 import com.example.kakaomapproject.databinding.ActivityMainBinding
+import com.example.kakaomapproject.model.RouteError
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
@@ -58,33 +57,41 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.mainViewState.collect { viewState ->
                 when (viewState) {
-                    is MainViewState.MapView -> {
-                        if (multiStyleLine != null) {
-                            routeLineLayer.remove(multiStyleLine)
-                        }
-                        createMultiStyleRoute(viewState.routes)
-                        setTimeDistanceView(viewState.distanceTime)
-                        hideLocationListWithAnimation()
-                    }
-
-                    is MainViewState.ListView -> {
-                        setLocationListView(viewState.locations)
-                    }
-
+                    is MainViewState.MapView -> handleMapViewState(viewState)
+                    is MainViewState.ListView -> setLocationListView(viewState.locations)
                     else -> {}
                 }
             }
         }
 
         lifecycleScope.launch {
-            viewModel.errorViewState.collect {
-                it?.let {
-                    val bottomSheet =
-                        ErrorBottomSheetFragment.newInstance(it.code, it.message, it.path)
-                    bottomSheet.show(supportFragmentManager, "ErrorBottomSheet")
-                }
+            viewModel.errorViewState.collect { errorState ->
+                errorState?.let { showErrorBottomSheet(errorState) }
             }
         }
+    }
+
+    private fun handleMapViewState(viewState: MainViewState.MapView) {
+        removeExistingRoute()
+        createMultiStyleRoute(viewState.routes)
+        setTimeDistanceView(viewState.distanceTime)
+        hideLocationListWithAnimation()
+    }
+
+    private fun removeExistingRoute() {
+        multiStyleLine?.let {
+            routeLineLayer.remove(it)
+            multiStyleLine = null
+        }
+    }
+
+    private fun showErrorBottomSheet(routeError: RouteError) {
+        val bottomSheet = ErrorBottomSheetFragment.newInstance(
+            routeError.code,
+            routeError.message,
+            routeError.path
+        )
+        bottomSheet.show(supportFragmentManager, "ErrorBottomSheet")
     }
 
     private fun initMap() {
@@ -95,10 +102,7 @@ class MainActivity : AppCompatActivity() {
         }, object : KakaoMapReadyCallback() {
             override fun onMapReady(map: KakaoMap) {
                 kakaoMap = map
-                kakaoMap.routeLineManager?.let { routeLineManager ->
-                    routeLineLayer = routeLineManager.getLayer()
-                }
-                //routeLineLayer = kakaoMap.routeLineManager.getLayer()
+                routeLineLayer = kakaoMap.routeLineManager?.layer ?: return
             }
         })
     }
@@ -118,16 +122,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        binding.mapView.resume() // MapView 의 resume 호출
-    }
-
-    override fun onPause() {
-        super.onPause()
-        binding.mapView.pause() // MapView 의 pause 호출
-    }
-
     private fun hideLocationListWithAnimation() {
         val translationY = ObjectAnimator.ofFloat(
             binding.locationListView,
@@ -135,20 +129,22 @@ class MainActivity : AppCompatActivity() {
             0f,
             binding.locationListView.height.toFloat()
         )
-
         val fadeOut = ObjectAnimator.ofFloat(binding.locationListView, "alpha", 1f, 0f)
 
-        val animatorSet = AnimatorSet().apply {
+        AnimatorSet().apply {
             playTogether(translationY, fadeOut)
             duration = 300
+            start()
+            doOnEnd {
+                binding.locationListView.visibility = View.INVISIBLE
+                resetLocationListView()
+            }
         }
+    }
 
-        animatorSet.start()
-        animatorSet.doOnEnd {
-            binding.locationListView.visibility = View.GONE
-            binding.locationListView.translationY = 0f // 위치 원복
-            binding.locationListView.alpha = 1f // 알파값 원복
-        }
+    private fun resetLocationListView() {
+        binding.locationListView.translationY = 0f
+        binding.locationListView.alpha = 1f
     }
 
     private fun createMultiStyleRoute(routes: List<Route>) {
@@ -156,43 +152,15 @@ class MainActivity : AppCompatActivity() {
         val boundsBuilder = LatLngBounds.Builder()
 
         routes.forEachIndexed { index, route ->
-            val style = when (index % 3) {
-                0 -> RouteLineStyle.from(this, R.style.RedRouteLineStyle)
-                1 -> RouteLineStyle.from(this, R.style.YellowRouteLineStyle)
-                2 -> RouteLineStyle.from(this, R.style.GreenRouteLineStyle)
-                else -> RouteLineStyle.from(this, R.style.BlueRouteLineStyle)
-            }
-
-            // Convert route points to LatLng and create RouteLineSegment
-            val points = route.points.split(" ").map {
-                val latLng = it.split(",")
-                val latLngPoint = LatLng.from(latLng[1].toDouble(), latLng[0].toDouble())
-                boundsBuilder.include(latLngPoint) // Add each LatLng point to bounds builder
-                latLngPoint
-            }
+            val points = parseRoutePoints(route, boundsBuilder)
+            val style = getRouteLineStyle(index)
             segments.add(RouteLineSegment.from(points, style))
 
-            if (index == 0) {
-                addIconTextLabel("startLabel_$index", points.first(), "Start")
-            }
-            if (index == routes.lastIndex) {
-                addIconTextLabel("endLabel_$index", points.last(), "End")
-            }
+            if (index == 0) addIconTextLabel("startLabel_$index", points.first(), "Start")
+            if (index == routes.lastIndex) addIconTextLabel("endLabel_$index", points.last(), "End")
         }
-
-        val options = RouteLineOptions.from(segments)
-
-        multiStyleLine = routeLineLayer.addRouteLine(options)
-
-        // Move the camera to fit the route bounds
-        val bounds = boundsBuilder.build() // Build the bounds from all the route points
-        kakaoMap.moveCamera(
-            CameraUpdateFactory.fitMapPoints(
-                bounds,
-                100
-            ), // Adjust the camera to fit the bounds with padding
-            CameraAnimation.from(500) // Optional smooth animation
-        )
+        drawRouteLine(segments)
+        moveCameraToRouteBounds(boundsBuilder)
     }
 
     private fun addIconTextLabel(labelId: String, position: LatLng, text: String) {
@@ -213,5 +181,47 @@ class MainActivity : AppCompatActivity() {
             LabelOptions.from(labelId, position).setStyles(styles)
                 .setTexts(LabelTextBuilder().setTexts(text))
         )
+    }
+
+    private fun parseRoutePoints(route: Route, boundsBuilder: LatLngBounds.Builder): List<LatLng> {
+        return route.points.split(" ").map {
+            val latLng = it.split(",")
+            LatLng.from(latLng[1].toDouble(), latLng[0].toDouble()).apply {
+                boundsBuilder.include(this)
+            }
+        }
+    }
+
+
+    private fun getRouteLineStyle(index: Int): RouteLineStyle {
+        return when (index % 3) {
+            0 -> RouteLineStyle.from(this, R.style.RedRouteLineStyle)
+            1 -> RouteLineStyle.from(this, R.style.YellowRouteLineStyle)
+            2 -> RouteLineStyle.from(this, R.style.GreenRouteLineStyle)
+            else -> RouteLineStyle.from(this, R.style.BlueRouteLineStyle)
+        }
+    }
+
+    private fun drawRouteLine(segments: List<RouteLineSegment>) {
+        val options = RouteLineOptions.from(segments)
+        multiStyleLine = routeLineLayer.addRouteLine(options)
+    }
+
+    private fun moveCameraToRouteBounds(boundsBuilder: LatLngBounds.Builder) {
+        val bounds = boundsBuilder.build()
+        kakaoMap.moveCamera(
+            CameraUpdateFactory.fitMapPoints(bounds, 100),
+            CameraAnimation.from(500)
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.mapView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.mapView.pause()
     }
 }
