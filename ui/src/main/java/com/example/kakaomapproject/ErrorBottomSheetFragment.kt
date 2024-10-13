@@ -14,16 +14,6 @@ class ErrorBottomSheetFragment : BottomSheetDialogFragment() {
 
     var onDismissCallback: (() -> Unit)? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // 테마 적용
-        setStyle(
-            STYLE_NORMAL,
-            R.style.AppBottomSheetDialogBorder24WhiteTheme  // 둥근 모서리 테마 적용
-        )
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
