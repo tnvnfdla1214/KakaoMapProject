@@ -12,8 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.data.response.DistanceTime
 import com.example.data.response.OriginDestination
-import com.example.data.response.Route
 import com.example.kakaomapproject.databinding.ActivityMainBinding
+import com.example.kakaomapproject.model.Route
 import com.example.kakaomapproject.model.RouteError
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity() {
 
         routes.forEachIndexed { index, route ->
             val points = parseRoutePoints(route, boundsBuilder)
-            val style = getRouteLineStyle(index)
+            val style = route.trafficState.getRouteLineStyle(this)
             segments.add(RouteLineSegment.from(points, style))
 
             if (index == 0) addIconTextLabel("startLabel_$index", points.first(), "Start")
@@ -189,16 +189,6 @@ class MainActivity : AppCompatActivity() {
             LatLng.from(latLng[1].toDouble(), latLng[0].toDouble()).apply {
                 boundsBuilder.include(this)
             }
-        }
-    }
-
-
-    private fun getRouteLineStyle(index: Int): RouteLineStyle {
-        return when (index % 3) {
-            0 -> RouteLineStyle.from(this, R.style.RedRouteLineStyle)
-            1 -> RouteLineStyle.from(this, R.style.YellowRouteLineStyle)
-            2 -> RouteLineStyle.from(this, R.style.GreenRouteLineStyle)
-            else -> RouteLineStyle.from(this, R.style.BlueRouteLineStyle)
         }
     }
 

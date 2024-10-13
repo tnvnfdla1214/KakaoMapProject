@@ -2,7 +2,7 @@ package com.example.data.service
 
 import com.example.data.response.DistanceTime
 import com.example.data.response.LocationsResponse
-import com.example.data.response.Route
+import com.example.data.response.RouteResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -14,7 +14,7 @@ interface RouteService {
 
     @Headers("Content-Type: application/json")
     @GET("routes")
-    suspend fun getRoute(@Query("origin") origin: String,@Query("destination")  destination: String): Response<List<Route>>
+    suspend fun getRoute(@Query("origin") origin: String,@Query("destination")  destination: String): Response<List<RouteResponse>>
 
     @Headers("Content-Type: application/json")
     @GET("distance-time")

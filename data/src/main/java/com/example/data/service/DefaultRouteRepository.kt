@@ -1,11 +1,10 @@
 package com.example.data.service
 
-import android.util.Log
 import com.example.data.RouteRepository
 import com.example.data.response.DistanceTime
 import com.example.data.response.LocationsResponse
 import com.example.data.response.ApiException
-import com.example.data.response.Route
+import com.example.data.response.RouteResponse
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -25,7 +24,7 @@ class DefaultRouteRepository @Inject constructor(
         }
     }
 
-    override suspend fun getRoute(origin: String, destination: String): Result<List<Route>> {
+    override suspend fun getRoute(origin: String, destination: String): Result<List<RouteResponse>> {
         return try {
             val response = routeService.getRoute(origin, destination)
             if (response.isSuccessful) {

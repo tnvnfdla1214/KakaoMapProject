@@ -2,7 +2,7 @@ package com.example.kakaomapproject
 
 import com.example.data.response.DistanceTime
 import com.example.data.response.OriginDestination
-import com.example.data.response.Route
+import com.example.kakaomapproject.model.Route
 
 sealed class MainViewState {
     data object Init : MainViewState()

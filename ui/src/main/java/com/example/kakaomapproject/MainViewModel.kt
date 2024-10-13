@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.RouteRepository
 import com.example.data.response.OriginDestination
 import com.example.data.response.ApiException
-import com.example.data.response.Route
+import com.example.kakaomapproject.model.Route
 import com.example.kakaomapproject.model.RouteError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +42,8 @@ class MainViewModel @Inject constructor(
     fun fetchRoute(location: OriginDestination) {
         viewModelScope.launch {
             routeRepository.getRoute(location.origin, location.destination).onSuccess { response ->
-                fetchDistanceTime(location, response)
+                val routes = response.map { routeResponse -> Route.fromRouteResponse(routeResponse) }
+                fetchDistanceTime(location, routes)
             }.onFailure { throwable ->
                 if (throwable is ApiException) {
                     _errorViewState.value = RouteError(
