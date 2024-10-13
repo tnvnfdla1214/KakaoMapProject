@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
+        viewModel.fetchLocations()
         lifecycleScope.launch {
             viewModel.mainViewState.collect { viewState ->
                 when (viewState) {

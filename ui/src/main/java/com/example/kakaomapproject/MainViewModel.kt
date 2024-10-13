@@ -27,15 +27,11 @@ class MainViewModel @Inject constructor(
     private val _errorViewState = MutableStateFlow<RouteError?>(null)
     val errorViewState: StateFlow<RouteError?> = _errorViewState
 
-    init {
-        fetchLocations()
-    }
-
     fun restErrorViewState() {
         _errorViewState.value = null
     }
 
-    private fun fetchLocations() {
+    fun fetchLocations() {
         viewModelScope.launch {
             routeRepository.getLocations().onSuccess { response ->
                 _mainViewState.value = MainViewState.ListView(response.locations)
