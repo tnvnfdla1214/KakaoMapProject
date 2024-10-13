@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">KakaoMapProject</string>
+    <string name="time_label_text">시간 : </string>
+    <string name="distance_label_text">거리 : </string>
 </resources>
