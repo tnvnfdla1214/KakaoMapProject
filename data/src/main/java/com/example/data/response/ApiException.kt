@@ -16,6 +16,11 @@ data class ApiException(
                 ApiException(defaultCode, json)
             }
         }
+
+        fun getPathErrorMessage(url: String): String {
+            val path = url.substringBefore("?").substringAfterLast("/")
+            return "/$path"
+        }
     }
 }
 
