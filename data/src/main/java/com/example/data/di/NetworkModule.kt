@@ -18,6 +18,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
 
+    companion object {
+        private const val BASE_URL =
+            "https://taxi-openapi.sandbox.onkakao.net/api/v1/coding-assignment/"
+        private const val TIMEOUT_DURATION = 30L
+    }
+
     @Provides
     @Singleton
     fun providesGsonConverter(): GsonConverterFactory = GsonConverterFactory.create()
@@ -25,24 +31,34 @@ class NetworkModule {
     @Provides
     @Singleton
     fun providesOkHttpClient(
-        @ApplicationContext context: Context,
+        authInterceptor: AuthInterceptor,
+        loggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
-        // HttpLoggingInterceptor 추가 및 로그 레벨 설정
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
-            // 로그 레벨을 BODY로 설정하면 요청과 응답의 모든 세부사항이 출력됩니다.
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-
-
         return OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor(context))
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .followRedirects(true)
             .followSslRedirects(true)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(TIMEOUT_DURATION, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT_DURATION, TimeUnit.SECONDS)
+            .writeTimeout(TIMEOUT_DURATION, TimeUnit.SECONDS)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+        return HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun providesAuthInterceptor(): AuthInterceptor {
+        // 예시로 고정된 토큰을 사용하지만, 실제 앱에서는 이 부분을 동적으로 설정
+        val authToken = "5c3bda0d-001e-4db0-b1f0-01ceb2cce8f5"  // 이 부분을 동적으로 변경 가능
+        return AuthInterceptor(authToken)
     }
 
     @Provides
@@ -50,18 +66,10 @@ class NetworkModule {
     fun providesRetrofit(
         converterFactory: GsonConverterFactory,
         client: OkHttpClient,
-    ): Retrofit = getRetrofit("https://taxi-openapi.sandbox.onkakao.net/api/v1/coding-assignment/", converterFactory, client)
-
-    private fun getRetrofit(
-        url: String,
-        converterFactory: GsonConverterFactory,
-        client: OkHttpClient,
-    ) = Retrofit
-        .Builder()
-        .baseUrl(url)
-        .addConverterFactory(converterFactory)
-        .client(client)
-        .build()
-
-
+    ): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(converterFactory)
+            .client(client)
+            .build()
 }
