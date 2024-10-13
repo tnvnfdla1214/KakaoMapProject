@@ -1,6 +1,5 @@
 package com.example.kakaomapproject
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.RouteRepository
@@ -40,9 +39,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             routeRepository.getLocations().onSuccess { response ->
                 _mainViewState.value = MainViewState.ListView(response.locations)
-            }.onFailure { throwable ->
-                Log.d("Viewmodel API Error", "throwable : " + throwable)
-            }
+            }.onFailure { throwable -> }
         }
     }
 
@@ -69,9 +66,7 @@ class MainViewModel @Inject constructor(
             routeRepository.getDistanceTime(location.origin, location.destination)
                 .onSuccess { distanceTime ->
                     _mainViewState.value = MainViewState.MapView(routes, distanceTime)
-                }.onFailure { throwable ->
-                    Log.d("Viewmodel API Error", "throwable : " + throwable)
-                }
+                }.onFailure { throwable -> }
         }
     }
 
