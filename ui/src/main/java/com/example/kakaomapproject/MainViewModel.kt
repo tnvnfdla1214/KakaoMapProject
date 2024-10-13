@@ -8,7 +8,6 @@ import com.example.data.response.OriginDestination
 import com.example.data.response.ApiException
 import com.example.data.response.Route
 import com.example.kakaomapproject.model.RouteError
-import com.kakao.vectormap.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +29,7 @@ class MainViewModel @Inject constructor(
         fetchLocations()
     }
 
-    fun fetchLocations() {
+    private fun fetchLocations() {
         viewModelScope.launch {
             routeRepository.getLocations().onSuccess { response ->
                 _mainViewState.value = MainViewState.ListView(response.locations)
@@ -60,9 +59,6 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             routeRepository.getDistanceTime(location.origin, location.destination)
                 .onSuccess { distanceTime ->
-                    routes.map {
-                        Log.d("qweqwe","it : " + it)
-                    }
                     _mainViewState.value = MainViewState.MapView(routes, distanceTime)
                 }.onFailure { throwable ->
                 Log.d("qweqwe", "throwable : " + throwable)
